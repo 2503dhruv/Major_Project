@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>DocMind — Intelligent Document QA</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,500;0,700;1,300&family=Geist+Mono:wght@400;500&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
+    <style>
+        *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+        :root{
+            --bg:        #f5f3ef;
+            --surface:   #ffffff;
+            --surface2:  #f9f8f6;
+            --border:    #e8e4dc;
+            --border2:   #d6d0c4;
+            --accent:    #2a6ef5;
+            --accent-lt: #eff4ff;
+            --accent2:   #0ea673;
+            --text:      #1a1916;
+            --text2:     #4a4740;
+            --muted:     #9a9489;
+            --warn:      #e8a02a;
+            --danger:    #e05252;
+            --success:   #0ea673;
+            --radius:    12px;
+            --shadow:    0 1px 3px rgba(0,0,0,.06), 0 4px 16px rgba(0,0,0,.04);
+            --shadow-md: 0 2px 8px rgba(0,0,0,.08), 0 8px 32px rgba(0,0,0,.06);
+            --panel:     300px;
+        }
+
+        html,body{height:100%;font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--text);overflow:hidden}
+
+        /* ── App shell ── */
+        .app{display:flex;height:100vh}
+
+        /* ── Sidebar ── */
+        .sidebar{
+            width:var(--panel);min-width:var(--panel);
+            background:var(--surface);
+            border-right:1px solid var(--border);
+            display:flex;flex-direction:column;
+            padding:0;overflow:hidden;
+        }
+
+        .sidebar-inner{
+            flex:1;overflow-y:auto;padding:22px 18px;
+            display:flex;flex-direction:column;gap:22px;
+        }
+        .sidebar-inner::-webkit-scrollbar{width:4px}
+        .sidebar-inner::-webkit-scrollbar-thumb{background:var(--border2);border-radius:99px}
+
+        /* Logo */
+        .logo{display:flex;align-items:center;gap:10px}
+        .logo-mark{
+            width:38px;height:38px;border-radius:11px;flex-shrink:0;
+            background:var(--text);
+            display:flex;align-items:center;justify-content:center;
+            position:relative;overflow:hidden;
+        }
+        .logo-mark::after{
+            content:'';position:absolute;inset:0;
+            background:linear-gradient(135deg,rgba(255,255,255,.12),transparent);
+        }
+        .logo-mark svg{width:20px;height:20px;fill:none;stroke:#fff;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+        .logo-text{display:flex;flex-direction:column}
+        .logo-name{font-family:'Fraunces',serif;font-size:17px;font-weight:700;letter-spacing:-.3px;color:var(--text)}
+        .logo-sub{font-size:10.5px;color:var(--muted);font-weight:500;margin-top:1px}
+
+        /* Section label */
+        .slabel{
+            font-size:10px;font-weight:600;letter-spacing:1.4px;
+            text-transform:uppercase;color:var(--muted);margin-bottom:8px;
+        }
+
+        /* Upload */
+        .upload-zone{
+            border:1.5px dashed var(--border2);
+            border-radius:var(--radius);padding:20px 14px;
+            text-align:center;cursor:pointer;
+            transition:border-color .2s,background .2s;
+            position:relative;background:var(--surface2);
+        }
+        .upload-zone:hover,.upload-zone.drag{
+            border-color:var(--accent);background:var(--accent-lt);
+        }
+        .upload-zone input{position:absolute;inset:0;opacity:0;cursor:pointer}
+        .upload-up{
+            width:36px;height:36px;border-radius:9px;margin:0 auto 10px;
+            background:var(--surface);border:1px solid var(--border);
+            display:flex;align-items:center;justify-content:center;
+            box-shadow:var(--shadow);
+        }
+        .upload-up svg{width:16px;height:16px;stroke:var(--text2);fill:none;stroke-width:1.8;stroke-linecap:round}
+        .upload-zone p{font-size:12.5px;color:var(--muted);line-height:1.55}
+        .upload-zone strong{color:var(--accent);font-weight:600}
+        .upload-types{
+            display:flex;gap:4px;justify-content:center;margin-top:9px;
+        }
+        .type-tag{
+            font-size:10px;font-weight:600;padding:2px 7px;border-radius:5px;
+            background:var(--surface);border:1px solid var(--border);color:var(--muted);
+        }
+
+        .upload-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .btn-process {
+            flex: 1;
+            height: 34px;
+            border-radius: 8px;
+            border: none;
+            background: var(--accent);
+            color: #fff;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 12.5px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: opacity 0.15s, transform 0.12s;
+            display: none; /* hidden until files selected */
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+        .btn-process:hover { opacity: 0.9; }
+        .btn-process:active { transform: scale(0.98); }
+        .btn-process svg { width: 14px; height: 14px; stroke: #fff; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+        .btn-process.show { display: flex; }
+
+        /* Progress */
+        .prog-wrap{display:none;flex-direction:column;gap:5px}
+        .prog-wrap.show{display:flex}
+        .prog-row{display:flex;justify-content:space-between;font-size:11.5px;color:var(--text2)}
+        .prog-pct{font-weight:600;color:var(--accent)}
+        .prog-bar{height:3px;border-radius:99px;background:var(--border);overflow:hidden}
+        .prog-fill{height:100%;background:var(--accent);border-radius:99px;width:0%;transition:width .35s ease}
+
+        /* Doc list */
+        .doc-list{display:flex;flex-direction:column;gap:6px}
+        .doc-item{
+            background:var(--surface2);border:1px solid var(--border);
+            border-radius:10px;padding:9px 11px;
+            display:flex;align-items:center;gap:9px;
+            animation:fadeUp .25s ease;
+            transition:border-color .15s;
+        }
+        .doc-item:hover{border-color:var(--border2)}
+        .doc-file-icon{
+            width:30px;height:30px;border-radius:7px;flex-shrink:0;
+            display:flex;align-items:center;justify-content:center;
+            font-size:14px;background:var(--surface);border:1px solid var(--border);
+        }
+        .doc-info{flex:1;min-width:0}
+        .doc-name{font-size:12.5px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--text)}
+        .doc-meta{font-size:11px;color:var(--muted);margin-top:1px;display:flex;align-items:center;gap:5px}
+        .doc-dot{width:5px;height:5px;border-radius:50%;background:var(--success);flex-shrink:0}
+        .doc-dot.pending{background:var(--warn);}
+        .doc-del{color:var(--muted);cursor:pointer;font-size:13px;flex-shrink:0;transition:color .15s;padding:3px}
+        .doc-del:hover{color:var(--danger)}
+
+        /* Settings */
+        .settings-list{display:flex;flex-direction:column;gap:11px}
+        .srow{display:flex;justify-content:space-between;align-items:center;gap:12px}
+        .srow-label{font-size:12.5px;color:var(--text2);font-weight:500}
+        .srow-sub{font-size:11px;color:var(--muted);margin-top:1px}
+
+        .pill-toggle{display:flex;border-radius:8px;overflow:hidden;border:1px solid var(--border);background:var(--surface2)}
+        .pill-toggle button{
+            flex:1;background:none;border:none;color:var(--muted);
+            font-family:'Plus Jakarta Sans',sans-serif;font-size:11.5px;font-weight:500;
+            padding:5px 9px;cursor:pointer;transition:background .15s,color .15s;white-space:nowrap;
+        }
+        .pill-toggle button.active{background:var(--text);color:#fff}
+
+        .slider-wrap{display:flex;align-items:center;gap:7px}
+        input[type=range]{
+            -webkit-appearance:none;width:90px;height:3px;
+            background:var(--border);border-radius:99px;outline:none;cursor:pointer;
+        }
+        input[type=range]::-webkit-slider-thumb{
+            -webkit-appearance:none;width:13px;height:13px;border-radius:50%;
+            background:var(--text);border:2px solid var(--surface);
+            box-shadow:0 1px 3px rgba(0,0,0,.15);cursor:pointer;
+        }
+        .slider-val{font-size:12px;color:var(--accent);font-weight:600;width:16px;text-align:right}
+
+        /* Model badge */
+        .model-card{
+            border:1px solid var(--border);border-radius:var(--radius);
+            padding:12px;background:var(--surface2);
+            display:flex;align-items:center;gap:10px;
+        }
+        .model-pulse{
+            width:8px;height:8px;border-radius:50%;background:var(--success);
+            flex-shrink:0;animation:pulse 2.5s infinite;
+        }
+        .model-info .mname{font-size:12.5px;font-weight:600;color:var(--text)}
+        .model-info .mdesc{font-size:11px;color:var(--muted);margin-top:1px}
+
+        /* ── Main ── */
+        .main{flex:1;display:flex;flex-direction:column;overflow:hidden;background:var(--bg)}
+
+        /* Topbar */
+        .topbar{
+            padding:14px 24px;
+            background:var(--surface);
+            border-bottom:1px solid var(--border);
+            display:flex;align-items:center;justify-content:space-between;
+            flex-shrink:0;
+        }
+        .topbar-left{display:flex;flex-direction:column;gap:2px}
+        .topbar-title{font-family:'Fraunces',serif;font-size:15px;font-weight:500;color:var(--text)}
+        .topbar-meta{font-size:11.5px;color:var(--muted)}
+        .topbar-right{display:flex;gap:6px}
+        .tbtn{
+            height:32px;padding:0 12px;border-radius:8px;border:1px solid var(--border);
+            background:var(--surface2);color:var(--text2);font-family:'Plus Jakarta Sans',sans-serif;
+            font-size:12px;font-weight:500;cursor:pointer;display:flex;align-items:center;gap:5px;
+            transition:border-color .15s,background .15s;
+        }
+        .tbtn:hover{border-color:var(--border2);background:var(--surface)}
+        .tbtn svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round}
+
+        /* Messages */
+        .messages{
+            flex:1;overflow-y:auto;padding:28px 32px;
+            display:flex;flex-direction:column;gap:18px;
+            scroll-behavior:smooth;
+        }
+        .messages::-webkit-scrollbar{width:5px}
+        .messages::-webkit-scrollbar-thumb{background:var(--border2);border-radius:99px}
+
+        /* Empty */
+        .empty-state{
+            flex:1;display:flex;flex-direction:column;
+            align-items:center;justify-content:center;
+            gap:10px;padding:40px;text-align:center;
+        }
+        .empty-orb{
+            width:72px;height:72px;border-radius:50%;
+            background:linear-gradient(135deg,#e8f0fe,#dbeafe);
+            border:1px solid #c7d7fd;
+            display:flex;align-items:center;justify-content:center;
+            margin-bottom:6px;
+        }
+        .empty-orb svg{width:30px;height:30px;stroke:var(--accent);fill:none;stroke-width:1.6;stroke-linecap:round}
+        .empty-title{font-family:'Fraunces',serif;font-size:21px;font-weight:500;color:var(--text)}
+        .empty-sub{font-size:13.5px;color:var(--muted);max-width:360px;line-height:1.65}
+        .suggestions{display:flex;flex-wrap:wrap;gap:7px;justify-content:center;margin-top:12px}
+        .suggestion{
+            background:var(--surface);border:1px solid var(--border);
+            border-radius:99px;padding:7px 15px;font-size:12.5px;font-weight:500;
+            cursor:pointer;color:var(--text2);
+            transition:border-color .15s,background .15s,color .15s;
+        }
+        .suggestion:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-lt)}
+
+        /* Messages */
+        .msg{display:flex;gap:10px;animation:fadeUp .22s ease;max-width:820px}
+        .msg.user{flex-direction:row-reverse;align-self:flex-end}
+        .msg-avatar{
+            width:32px;height:32px;border-radius:9px;flex-shrink:0;
+            display:flex;align-items:center;justify-content:center;font-size:14px;
+            border:1px solid var(--border);
+        }
+        .msg.user .msg-avatar{background:var(--text);border-color:var(--text)}
+        .msg.ai .msg-avatar{background:var(--surface);border-color:var(--border)}
+        .msg-body{flex:1;min-width:0}
+        .msg.user .msg-body{display:flex;justify-content:flex-end}
+
+        .bubble{
+            border-radius:14px;padding:11px 15px;
+            font-size:13.5px;line-height:1.7;max-width:100%;
+        }
+        .msg.user .bubble{
+            background:var(--text);color:#fff;
+            border-bottom-right-radius:4px;
+        }
+        .msg.ai .bubble{
+            background:var(--surface);border:1px solid var(--border);
+            border-bottom-left-radius:4px;color:var(--text);
+            box-shadow:var(--shadow);
+        }
+        .bubble p{margin-bottom:6px}
+        .bubble p:last-child{margin-bottom:0}
+
+        /* Sources */
+        .sources{display:flex;flex-wrap:wrap;gap:5px;margin-top:10px;padding-top:10px;border-top:1px solid var(--border)}
+        .src-label{font-size:10.5px;color:var(--muted);font-weight:600;letter-spacing:.5px;width:100%;margin-bottom:2px}
+        .source-chip{
+            display:flex;align-items:center;gap:5px;
+            background:var(--accent-lt);border:1px solid #c7d7fd;
+            border-radius:6px;padding:3px 9px;font-size:11.5px;color:var(--accent);
+            font-weight:500;cursor:pointer;transition:background .15s;
+        }
+        .source-chip:hover{background:#dceafe}
+        .source-chip svg{width:10px;height:10px;stroke:var(--accent);fill:none;stroke-width:2;stroke-linecap:round}
+
+        /* Typing */
+        .typing-dots{display:flex;gap:4px;align-items:center;padding:14px 15px}
+        .typing-dots span{
+            width:6px;height:6px;border-radius:50%;background:var(--border2);
+            animation:bounce 1.3s infinite;
+        }
+        .typing-dots span:nth-child(2){animation-delay:.18s}
+        .typing-dots span:nth-child(3){animation-delay:.36s}
+
+        /* Input */
+        .input-area{
+            padding:14px 24px 18px;
+            border-top:1px solid var(--border);
+            background:var(--surface);
+            flex-shrink:0;
+        }
+        .input-box{
+            display:flex;gap:8px;align-items:flex-end;
+            background:var(--surface2);
+            border:1.5px solid var(--border);
+            border-radius:13px;padding:10px 10px 10px 14px;
+            transition:border-color .2s,box-shadow .2s;
+        }
+        .input-box:focus-within{
+            border-color:var(--accent);
+            box-shadow:0 0 0 3px rgba(42,110,245,.08);
+        }
+        .input-box textarea{
+            flex:1;background:none;border:none;outline:none;
+            color:var(--text);font-family:'Plus Jakarta Sans',sans-serif;
+            font-size:13.5px;resize:none;max-height:120px;min-height:22px;line-height:1.55;
+        }
+        .input-box textarea::placeholder{color:var(--muted)}
+        .send-btn{
+            width:36px;height:36px;border-radius:9px;flex-shrink:0;
+            background:var(--text);border:none;cursor:pointer;
+            display:flex;align-items:center;justify-content:center;
+            transition:opacity .15s,transform .12s;
+        }
+        .send-btn:hover{opacity:.85}
+        .send-btn:active{transform:scale(.9)}
+        .send-btn:disabled{opacity:.3;cursor:not-allowed}
+        .send-btn svg{width:15px;height:15px;stroke:#fff;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+
+        .input-footer{display:flex;justify-content:space-between;align-items:center;margin-top:7px;padding:0 2px}
+        .input-hint{font-size:11px;color:var(--muted)}
+        .char-count{font-size:11px;color:var(--muted)}
+
+        /* Divider */
+        .divider{display:flex;align-items:center;gap:10px;opacity:.4}
+        .divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border2)}
+        .divider span{font-size:10px;color:var(--muted);font-weight:600;letter-spacing:1px;text-transform:uppercase}
+
+        /* Keyframes */
+        @keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+        @keyframes bounce{0%,80%,100%{transform:translateY(0)}40%{transform:translateY(-5px)}}
+        @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+
+        @media(max-width:700px){.sidebar{display:none}}
+    </style>
+</head>
+<body>
+<div class="app">
+
+    <!-- ══ SIDEBAR ══ -->
+    <aside class="sidebar">
+        <div class="sidebar-inner">
+
+            <!-- Logo -->
+            <div class="logo">
+                <div class="logo-mark">
+                    <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                </div>
+                <div class="logo-text">
+                    <div class="logo-name">DocMind</div>
+                    <div class="logo-sub">Intelligent QA System</div>
+                </div>
+            </div>
+
+            <!-- Upload -->
+            <div>
+                <div class="slabel">Upload Document</div>
+                <div class="upload-zone" id="uploadZone" ondragover="onDrag(event)" ondragleave="offDrag(event)" ondrop="onDrop(event)">
+                    <input type="file" id="fileInput" accept=".pdf,.docx,.txt" multiple onchange="handleFiles(this.files)"/>
+                    <div class="upload-up">
+                        <svg viewBox="0 0 24 24"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0018 9h-1.26A8 8 0 103 16.3"/></svg>
+                    </div>
+                    <p><strong>Click to upload</strong> or drag & drop<br/>your documents here</p>
+                    <div class="upload-types">
+                        <span class="type-tag">PDF</span>
+                        <span class="type-tag">DOCX</span>
+                        <span class="type-tag">TXT</span>
+                    </div>
+                </div>
+
+                <div class="upload-actions">
+                    <button class="btn-process" id="processBtn" onclick="processAllFiles()">
+                        <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                        Index Files
+                    </button>
+                </div>
+
+                <div class="prog-wrap" id="progWrap" style="margin-top:10px">
+                    <div class="prog-row">
+                        <span id="progFile">Indexing…</span>
+                        <span class="prog-pct" id="progPct">0%</span>
+                    </div>
+                    <div class="prog-bar"><div class="prog-fill" id="progFill"></div></div>
+                </div>
+            </div>
+
+            <!-- Doc list -->
+            <div>
+                <div class="slabel">Indexed Files</div>
+                <div class="doc-list" id="docList"></div>
+            </div>
+
+            <div class="divider"><span>Retrieval</span></div>
+
+            <!-- Settings -->
+            <div>
+                <div class="settings-list">
+
+                    <div class="srow">
+                        <div><div class="srow-label">Top-K Chunks</div><div class="srow-sub">Retrieved per query</div></div>
+                        <div class="slider-wrap">
+                            <input type="range" min="1" max="10" value="5" oninput="document.getElementById('kv').textContent=this.value"/>
+                            <span class="slider-val" id="kv">5</span>
+                        </div>
+                    </div>
+
+                    <div class="srow">
+                        <div><div class="srow-label">Chunk Size</div><div class="srow-sub">Tokens per segment</div></div>
+                        <div class="pill-toggle">
+                            <button class="active" onclick="setPill(this,event)">256</button>
+                            <button onclick="setPill(this,event)">512</button>
+                            <button onclick="setPill(this,event)">1k</button>
+                        </div>
+                    </div>
+
+                    <div class="srow">
+                        <div><div class="srow-label">Source Trace</div><div class="srow-sub">Show citations</div></div>
+                        <div class="pill-toggle">
+                            <button class="active" onclick="setPill(this,event)">On</button>
+                            <button onclick="setPill(this,event)">Off</button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Model -->
+            <div style="margin-top:auto">
+                <div class="slabel">Active Model</div>
+                <div class="model-card">
+                    <div class="model-pulse"></div>
+                    <div class="model-info">
+                        <div class="mname">Ollama · LLaMA 3</div>
+                        <div class="mdesc">Local · FAISS + Sentence-BERT</div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </aside>
+
+    <!-- ══ MAIN ══ -->
+    <main class="main">
+
+        <!-- Topbar -->
+        <header class="topbar">
+            <div class="topbar-left">
+                <div class="topbar-title">Document QA Chat</div>
+                <div class="topbar-meta" id="sessionMeta">No documents loaded · RAG pipeline ready</div>
+            </div>
+            <div class="topbar-right">
+                <button class="tbtn" onclick="clearChat()">
+                    <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/></svg>
+                    Clear
+                </button>
+                <button class="tbtn">
+                    <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                    Export
+                </button>
+            </div>
+        </header>
+
+        <!-- Chat area -->
+        <div class="messages" id="messages">
+            <div class="empty-state" id="emptyState">
+                <div class="empty-orb">
+                    <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                </div>
+                <div class="empty-title">Ask your documents anything</div>
+                <div class="empty-sub">Upload a document on the left, then type a question. The RAG pipeline retrieves the most relevant chunks and generates a grounded answer.</div>
+                <div class="suggestions">
+                    <div class="suggestion" onclick="useSuggestion(this)">Summarize the project</div>
+                    <div class="suggestion" onclick="useSuggestion(this)">What is the system architecture?</div>
+                    <div class="suggestion" onclick="useSuggestion(this)">Non-functional requirements</div>
+                    <div class="suggestion" onclick="useSuggestion(this)">What modules are completed?</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Input -->
+        <div class="input-area">
+            <div class="input-box">
+        <textarea id="queryInput" rows="1" placeholder="Ask a question about your documents…"
+                  onkeydown="handleKey(event)" oninput="autoResize(this);updateCC(this)"></textarea>
+                <button class="send-btn" id="sendBtn" onclick="sendMessage()">
+                    <svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                </button>
+            </div>
+            <div class="input-footer">
+                <span class="input-hint">↵ to send · Shift+↵ new line</span>
+                <span class="char-count" id="charCount">0 / 2000</span>
+            </div>
+        </div>
+
+    </main>
+</div>
+
+<script>
+    let docs=[], isWaiting=false;
+
+    const API_BASE_URL = 'http://localhost:8000';
+
+    // Upload
+    function onDrag(e){e.preventDefault();document.getElementById('uploadZone').classList.add('drag')}
+    function offDrag(e){document.getElementById('uploadZone').classList.remove('drag')}
+    function onDrop(e){e.preventDefault();offDrag(e);handleFiles(e.dataTransfer.files)}
+
+    function handleFiles(files){
+        if(!files.length)return;
+
+        // Instead of immediately sending to backend, just add to our list as pending
+        Array.from(files).forEach((file)=>{
+            const ext=file.name.split('.').pop().toLowerCase();
+            const icon=ext==='pdf'?'📕':ext==='docx'?'📘':'📄';
+            const size=(file.size/1024).toFixed(1)+' KB';
+
+            // Add as pending doc
+            docs.push({
+                id: Date.now() + Math.random(),
+                name: file.name,
+                size,
+                icon,
+                fileObj: file,
+                status: 'pending'
+            });
+        });
+
+        renderDocs();
+        updateMeta();
+
+        // Show the process button
+        document.getElementById('processBtn').classList.add('show');
+    }
+
+    async function processAllFiles() {
+        const pendingDocs = docs.filter(d => d.status === 'pending');
+        if (pendingDocs.length === 0) return;
+
+        // Hide button during processing
+        document.getElementById('processBtn').classList.remove('show');
+
+        // Disable chat
+        isWaiting = true;
+        document.getElementById('sendBtn').disabled = true;
+        document.getElementById('queryInput').disabled = true;
+
+        // If this is a completely fresh run (or we cleared all indexed docs), reset first
+        const indexedDocs = docs.filter(d => d.status === 'indexed');
+        if (indexedDocs.length === 0) {
+            try {
+                await fetch(`${API_BASE_URL}/api/reset`, { method: 'POST' });
+            } catch (e) {
+                console.error("Reset failed", e);
+            }
+        }
+
+        const pw=document.getElementById('progWrap');
+        const pf=document.getElementById('progFill');
+        const pl=document.getElementById('progFile');
+        const pp=document.getElementById('progPct');
+        pw.classList.add('show');
+
+        // Process sequentially
+        for (let i = 0; i < pendingDocs.length; i++) {
+            const doc = pendingDocs[i];
+            pl.textContent = `Indexing ${i+1} of ${pendingDocs.length}: ${doc.name}`;
+            pf.style.width = '50%';
+            pp.textContent = 'Processing...';
+
+            const formData = new FormData();
+            formData.append('file', doc.fileObj);
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/upload`, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (response.ok) {
+                    doc.status = 'indexed';
+                    renderDocs(); // update the dot color
+                } else {
+                    console.error('Upload failed for', doc.name);
+                    doc.status = 'error';
+                    renderDocs();
+                }
+            } catch (error) {
+                console.error('Error uploading file:', error);
+                doc.status = 'error';
+                renderDocs();
+            }
+        }
+
+        pf.style.width = '100%';
+        pp.textContent = 'Complete';
+
+        setTimeout(() => {
+            pw.classList.remove('show');
+            isWaiting = false;
+            document.getElementById('sendBtn').disabled = false;
+            document.getElementById('queryInput').disabled = false;
+            updateMeta();
+        }, 1000);
+    }
+
+    function renderDocs(){
+        document.getElementById('docList').innerHTML=docs.map(d=>`
+    <div class="doc-item" id="doc-${d.id}">
+      <div class="doc-file-icon">${d.icon}</div>
+      <div class="doc-info">
+        <div class="doc-name" title="${d.name}">${d.name}</div>
+        <div class="doc-meta">
+            <div class="doc-dot ${d.status === 'pending' ? 'pending' : ''}" ${d.status === 'error' ? 'style="background:var(--danger)"' : ''}></div>
+            ${d.size} · ${d.status === 'pending' ? 'Pending' : d.status === 'error' ? 'Error' : 'Indexed'}
+        </div>
+      </div>
+      <div class="doc-del" onclick="removeDoc(${d.id})" title="Remove">✕</div>
+    </div>`).join('');
+    }
+
+    async function removeDoc(id){
+        docs=docs.filter(d=>d.id!==id);
+        renderDocs();
+        updateMeta();
+
+        // If no pending docs left, hide the index button
+        if (docs.filter(d => d.status === 'pending').length === 0) {
+            document.getElementById('processBtn').classList.remove('show');
+        }
+
+        // If all docs removed, reset the backend index completely
+        if (docs.length === 0) {
+            try {
+                await fetch(`${API_BASE_URL}/api/reset`, { method: 'POST' });
+            } catch (e) {
+                 console.error('Failed to reset index:', e);
+            }
+        }
+    }
+
+    function updateMeta(){
+        const indexed = docs.filter(d => d.status === 'indexed').length;
+        document.getElementById('sessionMeta').textContent=indexed > 0
+            ?`${indexed} document${indexed>1?'s':''} loaded · RAG pipeline active`
+            :'No documents loaded · RAG pipeline ready';
+    }
+
+    // Chat
+    async function sendMessage(){
+        const ta=document.getElementById('queryInput');
+        const q=ta.value.trim();
+        if(!q||isWaiting)return;
+        ta.value='';autoResize(ta);updateCC(ta);
+        hideEmpty();addUserMsg(q);showTyping();isWaiting=true;
+
+        try {
+            const response = await fetch(`${API_BASE_URL}/api/chat`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ query: q })
+            });
+
+            const data = await response.json();
+            removeTyping();
+
+            if (response.ok) {
+                addAiMsg(data.text, data.sources || []);
+            } else {
+                addAiMsg("Sorry, I encountered an error connecting to the backend.", []);
+            }
+        } catch (error) {
+            console.error('Error sending message:', error);
+            removeTyping();
+            addAiMsg("Sorry, I couldn't connect to the backend server. Make sure it's running on port 8000.", []);
+        } finally {
+            isWaiting=false;
+        }
+    }
+
+    function addUserMsg(text){
+        const el=document.createElement('div');
+        el.className='msg user';
+        el.innerHTML=`<div class="msg-avatar" style="font-size:13px;color:#fff">U</div><div class="msg-body"><div class="bubble">${esc(text)}</div></div>`;
+        document.getElementById('messages').appendChild(el);scrollBot();
+    }
+
+    function addAiMsg(html,sources){
+        const chips=sources.map(s=>`<div class="source-chip"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>${esc(s.substring(0, 30))}...</div>`).join('');
+        const srcBlock=sources.length?`<div class="sources"><div class="src-label">Sources</div>${chips}</div>`:'';
+        const el=document.createElement('div');
+        el.className='msg ai';
+        el.innerHTML=`
+    <div class="msg-avatar">🤖</div>
+    <div class="msg-body"><div class="bubble"><p>${html.replace(/\n/g,'</p><p>')}</p>${srcBlock}</div></div>`;
+        document.getElementById('messages').appendChild(el);scrollBot();
+    }
+
+    function showTyping(){
+        const el=document.createElement('div');el.className='msg ai';el.id='typing';
+        el.innerHTML=`<div class="msg-avatar">🤖</div><div class="msg-body"><div class="bubble"><div class="typing-dots"><span></span><span></span><span></span></div></div></div>`;
+        document.getElementById('messages').appendChild(el);scrollBot();
+    }
+    function removeTyping(){document.getElementById('typing')?.remove()}
+
+    function clearChat(){
+        document.getElementById('messages').innerHTML='';showEmpty();
+    }
+    function hideEmpty(){document.getElementById('emptyState')?.remove()}
+    function showEmpty(){
+        const es=document.createElement('div');es.className='empty-state';es.id='emptyState';
+        es.innerHTML=`<div class="empty-orb"><svg viewBox="0 0 24 24" width="30" height="30" stroke="var(--accent)" fill="none" stroke-width="1.6" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div><div class="empty-title">Ask your documents anything</div><div class="empty-sub">Upload a document on the left, then type a question.</div>`;
+        document.getElementById('messages').appendChild(es);
+    }
+    function useSuggestion(el){document.getElementById('queryInput').value=el.textContent;sendMessage()}
+
+    // Helpers
+    function scrollBot(){const m=document.getElementById('messages');m.scrollTop=m.scrollHeight}
+    function handleKey(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMessage()}}
+    function autoResize(ta){ta.style.height='auto';ta.style.height=Math.min(ta.scrollHeight,120)+'px'}
+    function updateCC(ta){document.getElementById('charCount').textContent=ta.value.length+' / 2000'}
+    function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+    function setPill(btn,e){e.stopPropagation();btn.closest('.pill-toggle').querySelectorAll('button').forEach(b=>b.classList.remove('active'));btn.classList.add('active')}
+</script>
+</body>
+</html>
