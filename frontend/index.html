@@ -25,8 +25,8 @@
             --success:   #0ea673;
             --radius:    12px;
             --shadow:    0 1px 3px rgba(0,0,0,.06), 0 4px 16px rgba(0,0,0,.04);
-            --shadow-md: 0 2px 8px rgba(0,0,0,.08), 0 8px 32px rgba(0,0,0,.06);
-            --panel:     300px;
+            --shadow-md: 0 4px 12px rgba(0,0,0,.08), 0 12px 32px rgba(0,0,0,.08);
+            --panel:     320px;
         }
 
         html,body{height:100%;font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--text);overflow:hidden}
@@ -41,322 +41,443 @@
             border-right:1px solid var(--border);
             display:flex;flex-direction:column;
             padding:0;overflow:hidden;
+            z-index: 10;
         }
 
         .sidebar-inner{
-            flex:1;overflow-y:auto;padding:22px 18px;
-            display:flex;flex-direction:column;gap:22px;
+            flex:1;overflow-y:auto;padding:24px 20px;
+            display:flex;flex-direction:column;gap:26px;
         }
-        .sidebar-inner::-webkit-scrollbar{width:4px}
+        .sidebar-inner::-webkit-scrollbar{width:5px}
         .sidebar-inner::-webkit-scrollbar-thumb{background:var(--border2);border-radius:99px}
 
         /* Logo */
-        .logo{display:flex;align-items:center;gap:10px}
+        .logo{display:flex;align-items:center;gap:12px; transition: transform 0.2s ease;}
+        .logo:hover{transform: scale(1.02);}
         .logo-mark{
-            width:38px;height:38px;border-radius:11px;flex-shrink:0;
-            background:var(--text);
+            width:42px;height:42px;border-radius:12px;flex-shrink:0;
+            background:linear-gradient(135deg, var(--text), #333);
             display:flex;align-items:center;justify-content:center;
             position:relative;overflow:hidden;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
         }
-        .logo-mark::after{
-            content:'';position:absolute;inset:0;
-            background:linear-gradient(135deg,rgba(255,255,255,.12),transparent);
-        }
-        .logo-mark svg{width:20px;height:20px;fill:none;stroke:#fff;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+        .logo-mark svg{width:22px;height:22px;fill:none;stroke:#fff;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
         .logo-text{display:flex;flex-direction:column}
-        .logo-name{font-family:'Fraunces',serif;font-size:17px;font-weight:700;letter-spacing:-.3px;color:var(--text)}
-        .logo-sub{font-size:10.5px;color:var(--muted);font-weight:500;margin-top:1px}
+        .logo-name{font-family:'Fraunces',serif;font-size:19px;font-weight:700;letter-spacing:-.3px;color:var(--text)}
+        .logo-sub{font-size:11px;color:var(--muted);font-weight:600;margin-top:2px; text-transform: uppercase; letter-spacing: 0.5px;}
 
         /* Section label */
         .slabel{
-            font-size:10px;font-weight:600;letter-spacing:1.4px;
-            text-transform:uppercase;color:var(--muted);margin-bottom:8px;
+            font-size:10.5px;font-weight:700;letter-spacing:1.5px;
+            text-transform:uppercase;color:var(--muted);margin-bottom:10px;
+            display: flex; align-items: center; gap: 8px;
+        }
+        .slabel::after {
+            content: ''; flex: 1; height: 1px; background: var(--border);
         }
 
         /* Upload */
         .upload-zone{
-            border:1.5px dashed var(--border2);
-            border-radius:var(--radius);padding:20px 14px;
+            border:2px dashed var(--border2);
+            border-radius:var(--radius);padding:24px 16px;
             text-align:center;cursor:pointer;
-            transition:border-color .2s,background .2s;
+            transition:all .3s cubic-bezier(0.4, 0, 0.2, 1);
             position:relative;background:var(--surface2);
         }
         .upload-zone:hover,.upload-zone.drag{
             border-color:var(--accent);background:var(--accent-lt);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(42, 110, 245, 0.1);
         }
-        .upload-zone input{position:absolute;inset:0;opacity:0;cursor:pointer}
+        .upload-zone.drag{
+            transform: scale(1.02);
+            border-width: 2px;
+        }
+        .upload-zone input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
         .upload-up{
-            width:36px;height:36px;border-radius:9px;margin:0 auto 10px;
+            width:42px;height:42px;border-radius:10px;margin:0 auto 12px;
             background:var(--surface);border:1px solid var(--border);
             display:flex;align-items:center;justify-content:center;
             box-shadow:var(--shadow);
+            transition: transform 0.3s ease;
         }
-        .upload-up svg{width:16px;height:16px;stroke:var(--text2);fill:none;stroke-width:1.8;stroke-linecap:round}
-        .upload-zone p{font-size:12.5px;color:var(--muted);line-height:1.55}
+        .upload-zone:hover .upload-up {
+            transform: translateY(-4px);
+            border-color: #c7d7fd;
+        }
+        .upload-up svg{width:18px;height:18px;stroke:var(--accent);fill:none;stroke-width:2;stroke-linecap:round}
+        .upload-zone p{font-size:13px;color:var(--text2);line-height:1.5; margin-bottom: 12px;}
         .upload-zone strong{color:var(--accent);font-weight:600}
         .upload-types{
-            display:flex;gap:4px;justify-content:center;margin-top:9px;
+            display:flex;gap:6px;justify-content:center;
         }
         .type-tag{
-            font-size:10px;font-weight:600;padding:2px 7px;border-radius:5px;
+            font-size:10px;font-weight:700;padding:4px 8px;border-radius:6px;
             background:var(--surface);border:1px solid var(--border);color:var(--muted);
+            letter-spacing: 0.5px;
         }
 
         .upload-actions {
             display: flex;
             gap: 10px;
-            margin-top: 10px;
+            margin-top: 12px;
         }
         .btn-process {
             flex: 1;
-            height: 34px;
-            border-radius: 8px;
+            height: 40px;
+            border-radius: 10px;
             border: none;
-            background: var(--accent);
+            background: linear-gradient(135deg, var(--accent), #1d5ce5);
             color: #fff;
             font-family: 'Plus Jakarta Sans', sans-serif;
-            font-size: 12.5px;
+            font-size: 13px;
             font-weight: 600;
             cursor: pointer;
-            transition: opacity 0.15s, transform 0.12s;
-            display: none; /* hidden until files selected */
+            transition: all 0.2s ease;
+            display: none;
             align-items: center;
             justify-content: center;
-            gap: 6px;
+            gap: 8px;
+            box-shadow: 0 4px 12px rgba(42, 110, 245, 0.2);
         }
-        .btn-process:hover { opacity: 0.9; }
+        .btn-process:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(42, 110, 245, 0.3);
+        }
         .btn-process:active { transform: scale(0.98); }
-        .btn-process svg { width: 14px; height: 14px; stroke: #fff; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
-        .btn-process.show { display: flex; }
+        .btn-process svg { width: 16px; height: 16px; stroke: #fff; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+        .btn-process.show { display: flex; animation: slideUp 0.3s ease; }
+
+        @keyframes slideUp { from { opacity:0; transform: translateY(10px); } to { opacity:1; transform: translateY(0); } }
 
         /* Progress */
-        .prog-wrap{display:none;flex-direction:column;gap:5px}
-        .prog-wrap.show{display:flex}
-        .prog-row{display:flex;justify-content:space-between;font-size:11.5px;color:var(--text2)}
-        .prog-pct{font-weight:600;color:var(--accent)}
-        .prog-bar{height:3px;border-radius:99px;background:var(--border);overflow:hidden}
-        .prog-fill{height:100%;background:var(--accent);border-radius:99px;width:0%;transition:width .35s ease}
+        .prog-wrap{display:none;flex-direction:column;gap:8px; margin-top: 16px; background: var(--surface2); padding: 12px; border-radius: 10px; border: 1px solid var(--border);}
+        .prog-wrap.show{display:flex; animation: fadeIn 0.3s ease;}
+        .prog-row{display:flex;justify-content:space-between;font-size:12px;color:var(--text2); font-weight: 500;}
+        .prog-pct{font-weight:700;color:var(--accent)}
+        .prog-bar{height:6px;border-radius:99px;background:var(--border);overflow:hidden; position: relative;}
+        .prog-fill{height:100%;background:linear-gradient(90deg, var(--accent), #6096ff);border-radius:99px;width:0%;transition:width .4s cubic-bezier(0.4, 0, 0.2, 1);}
+        .prog-fill::after {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            animation: shimmer 1.5s infinite;
+        }
+        @keyframes shimmer { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
 
         /* Doc list */
-        .doc-list{display:flex;flex-direction:column;gap:6px}
+        .doc-list{display:flex;flex-direction:column;gap:8px}
         .doc-item{
-            background:var(--surface2);border:1px solid var(--border);
-            border-radius:10px;padding:9px 11px;
-            display:flex;align-items:center;gap:9px;
-            animation:fadeUp .25s ease;
-            transition:border-color .15s;
+            background:var(--surface);border:1px solid var(--border);
+            border-radius:12px;padding:12px;
+            display:flex;align-items:center;gap:12px;
+            animation:fadeUp .3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition:all .2s ease;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.02);
         }
-        .doc-item:hover{border-color:var(--border2)}
+        .doc-item:hover{border-color:var(--accent); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(42, 110, 245, 0.08);}
         .doc-file-icon{
-            width:30px;height:30px;border-radius:7px;flex-shrink:0;
+            width:34px;height:34px;border-radius:8px;flex-shrink:0;
             display:flex;align-items:center;justify-content:center;
-            font-size:14px;background:var(--surface);border:1px solid var(--border);
+            font-size:16px;background:var(--surface2);border:1px solid var(--border);
         }
         .doc-info{flex:1;min-width:0}
-        .doc-name{font-size:12.5px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--text)}
-        .doc-meta{font-size:11px;color:var(--muted);margin-top:1px;display:flex;align-items:center;gap:5px}
-        .doc-dot{width:5px;height:5px;border-radius:50%;background:var(--success);flex-shrink:0}
-        .doc-dot.pending{background:var(--warn);}
-        .doc-del{color:var(--muted);cursor:pointer;font-size:13px;flex-shrink:0;transition:color .15s;padding:3px}
-        .doc-del:hover{color:var(--danger)}
+        .doc-name{font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--text)}
+        .doc-meta{font-size:11px;color:var(--muted);margin-top:3px;display:flex;align-items:center;gap:6px; font-weight: 500;}
+        .doc-dot{width:6px;height:6px;border-radius:50%;background:var(--success);flex-shrink:0; box-shadow: 0 0 0 2px rgba(14, 166, 115, 0.2);}
+        .doc-dot.pending{background:var(--warn); box-shadow: 0 0 0 2px rgba(232, 160, 42, 0.2);}
+        .doc-dot.error{background:var(--danger); box-shadow: 0 0 0 2px rgba(224, 82, 82, 0.2);}
+        .doc-del{
+            color:var(--muted);cursor:pointer;width:24px;height:24px;
+            display:flex;align-items:center;justify-content:center;
+            border-radius:6px;flex-shrink:0;transition:all .2s;
+            background: transparent;
+        }
+        .doc-del:hover{color:var(--danger); background: #ffebeb;}
+
+        .btn-clear-docs {
+            margin-top: 8px; width: 100%; height: 32px; border-radius: 8px;
+            border: 1px solid var(--danger); background: rgba(224,82,82,.05); color: var(--danger);
+            font-family: 'Plus Jakarta Sans', sans-serif; font-size: 12px; font-weight: 600;
+            cursor: pointer; transition: all .15s; display: none;
+        }
+        .btn-clear-docs:hover {
+            background: rgba(224,82,82,.15); transform: translateY(-1px);
+        }
 
         /* Settings */
-        .settings-list{display:flex;flex-direction:column;gap:11px}
+        .settings-list{display:flex;flex-direction:column;gap:16px}
         .srow{display:flex;justify-content:space-between;align-items:center;gap:12px}
-        .srow-label{font-size:12.5px;color:var(--text2);font-weight:500}
-        .srow-sub{font-size:11px;color:var(--muted);margin-top:1px}
+        .srow-label{font-size:13px;color:var(--text);font-weight:600}
+        .srow-sub{font-size:11px;color:var(--muted);margin-top:2px; font-weight: 500;}
 
-        .pill-toggle{display:flex;border-radius:8px;overflow:hidden;border:1px solid var(--border);background:var(--surface2)}
+        .pill-toggle{display:flex;border-radius:8px;overflow:hidden;border:1px solid var(--border);background:var(--surface2); padding: 2px;}
         .pill-toggle button{
             flex:1;background:none;border:none;color:var(--muted);
-            font-family:'Plus Jakarta Sans',sans-serif;font-size:11.5px;font-weight:500;
-            padding:5px 9px;cursor:pointer;transition:background .15s,color .15s;white-space:nowrap;
+            font-family:'Plus Jakarta Sans',sans-serif;font-size:12px;font-weight:600;
+            padding:6px 12px;cursor:pointer;transition:all .2s;white-space:nowrap;
+            border-radius: 6px;
         }
-        .pill-toggle button.active{background:var(--text);color:#fff}
+        .pill-toggle button.active{background:var(--surface);color:var(--text); box-shadow: 0 2px 6px rgba(0,0,0,0.06);}
 
-        .slider-wrap{display:flex;align-items:center;gap:7px}
+        .slider-wrap{display:flex;align-items:center;gap:10px}
         input[type=range]{
-            -webkit-appearance:none;width:90px;height:3px;
+            -webkit-appearance:none;width:100px;height:4px;
             background:var(--border);border-radius:99px;outline:none;cursor:pointer;
         }
         input[type=range]::-webkit-slider-thumb{
-            -webkit-appearance:none;width:13px;height:13px;border-radius:50%;
-            background:var(--text);border:2px solid var(--surface);
-            box-shadow:0 1px 3px rgba(0,0,0,.15);cursor:pointer;
+            -webkit-appearance:none;width:16px;height:16px;border-radius:50%;
+            background:var(--surface);border:2px solid var(--accent);
+            box-shadow:0 2px 4px rgba(0,0,0,.15);cursor:pointer;
+            transition: transform 0.1s;
         }
-        .slider-val{font-size:12px;color:var(--accent);font-weight:600;width:16px;text-align:right}
+        input[type=range]::-webkit-slider-thumb:hover { transform: scale(1.1); }
+        .slider-val{font-size:13px;color:var(--accent);font-weight:700;width:20px;text-align:right}
 
         /* Model badge */
         .model-card{
-            border:1px solid var(--border);border-radius:var(--radius);
-            padding:12px;background:var(--surface2);
-            display:flex;align-items:center;gap:10px;
+            border:1px solid var(--border);border-radius:12px;
+            padding:16px;background:linear-gradient(to right, var(--surface2), var(--surface));
+            display:flex;align-items:center;gap:12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+            transition: all 0.3s;
         }
+        .model-card:hover { border-color: #d1dfed; box-shadow: 0 4px 12px rgba(42,110,245,0.05); }
         .model-pulse{
-            width:8px;height:8px;border-radius:50%;background:var(--success);
-            flex-shrink:0;animation:pulse 2.5s infinite;
+            width:10px;height:10px;border-radius:50%;background:var(--success);
+            flex-shrink:0;animation:pulse 2s infinite; box-shadow: 0 0 0 3px rgba(14, 166, 115, 0.2);
         }
-        .model-info .mname{font-size:12.5px;font-weight:600;color:var(--text)}
-        .model-info .mdesc{font-size:11px;color:var(--muted);margin-top:1px}
+        .model-info .mname{font-size:13px;font-weight:700;color:var(--text)}
+        .model-info .mdesc{font-size:11.5px;color:var(--muted);margin-top:2px; font-weight: 500;}
 
         /* ── Main ── */
         .main{flex:1;display:flex;flex-direction:column;overflow:hidden;background:var(--bg)}
 
         /* Topbar */
         .topbar{
-            padding:14px 24px;
+            padding:16px 32px;
             background:var(--surface);
             border-bottom:1px solid var(--border);
             display:flex;align-items:center;justify-content:space-between;
             flex-shrink:0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.02);
+            z-index: 5;
         }
-        .topbar-left{display:flex;flex-direction:column;gap:2px}
-        .topbar-title{font-family:'Fraunces',serif;font-size:15px;font-weight:500;color:var(--text)}
-        .topbar-meta{font-size:11.5px;color:var(--muted)}
-        .topbar-right{display:flex;gap:6px}
+        .topbar-left{display:flex;flex-direction:column;gap:3px}
+        .topbar-title{font-family:'Fraunces',serif;font-size:18px;font-weight:600;color:var(--text)}
+        .topbar-meta{font-size:12px;color:var(--muted); font-weight: 500; display: flex; align-items: center; gap: 6px;}
+        .status-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--muted); transition: background 0.3s; }
+        .status-dot.active { background: var(--success); box-shadow: 0 0 0 2px rgba(14,166,115,0.2); }
+
+        .topbar-right{display:flex;gap:8px}
         .tbtn{
-            height:32px;padding:0 12px;border-radius:8px;border:1px solid var(--border);
+            height:36px;padding:0 14px;border-radius:8px;border:1px solid var(--border);
             background:var(--surface2);color:var(--text2);font-family:'Plus Jakarta Sans',sans-serif;
-            font-size:12px;font-weight:500;cursor:pointer;display:flex;align-items:center;gap:5px;
-            transition:border-color .15s,background .15s;
+            font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px;
+            transition:all .2s;
         }
-        .tbtn:hover{border-color:var(--border2);background:var(--surface)}
-        .tbtn svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round}
+        .tbtn:hover{border-color:var(--text);background:var(--surface); color: var(--text);}
+        .tbtn svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round}
 
         /* Messages */
         .messages{
-            flex:1;overflow-y:auto;padding:28px 32px;
-            display:flex;flex-direction:column;gap:18px;
+            flex:1;overflow-y:auto;padding:32px 40px;
+            display:flex;flex-direction:column;gap:24px;
             scroll-behavior:smooth;
         }
-        .messages::-webkit-scrollbar{width:5px}
+        .messages::-webkit-scrollbar{width:6px}
         .messages::-webkit-scrollbar-thumb{background:var(--border2);border-radius:99px}
 
         /* Empty */
         .empty-state{
             flex:1;display:flex;flex-direction:column;
             align-items:center;justify-content:center;
-            gap:10px;padding:40px;text-align:center;
+            gap:12px;padding:40px;text-align:center;
+            animation: fadeIn 0.5s ease;
         }
         .empty-orb{
-            width:72px;height:72px;border-radius:50%;
-            background:linear-gradient(135deg,#e8f0fe,#dbeafe);
+            width:80px;height:80px;border-radius:50%;
+            background:linear-gradient(135deg,var(--accent-lt),#dbeafe);
             border:1px solid #c7d7fd;
             display:flex;align-items:center;justify-content:center;
-            margin-bottom:6px;
+            margin-bottom:8px;
+            box-shadow: 0 8px 24px rgba(42,110,245,0.15);
         }
-        .empty-orb svg{width:30px;height:30px;stroke:var(--accent);fill:none;stroke-width:1.6;stroke-linecap:round}
-        .empty-title{font-family:'Fraunces',serif;font-size:21px;font-weight:500;color:var(--text)}
-        .empty-sub{font-size:13.5px;color:var(--muted);max-width:360px;line-height:1.65}
-        .suggestions{display:flex;flex-wrap:wrap;gap:7px;justify-content:center;margin-top:12px}
+        .empty-orb svg{width:36px;height:36px;stroke:var(--accent);fill:none;stroke-width:1.8;stroke-linecap:round}
+        .empty-title{font-family:'Fraunces',serif;font-size:24px;font-weight:600;color:var(--text)}
+        .empty-sub{font-size:14px;color:var(--text2);max-width:400px;line-height:1.6; font-weight: 500;}
+        .suggestions{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:20px}
         .suggestion{
             background:var(--surface);border:1px solid var(--border);
-            border-radius:99px;padding:7px 15px;font-size:12.5px;font-weight:500;
+            border-radius:99px;padding:10px 18px;font-size:13px;font-weight:600;
             cursor:pointer;color:var(--text2);
-            transition:border-color .15s,background .15s,color .15s;
+            transition:all .2s ease;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.03);
         }
-        .suggestion:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-lt)}
+        .suggestion:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-lt); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(42,110,245,0.1);}
 
         /* Messages */
-        .msg{display:flex;gap:10px;animation:fadeUp .22s ease;max-width:820px}
+        .msg{display:flex;gap:14px;animation:fadeUp .3s cubic-bezier(0.4, 0, 0.2, 1);max-width:880px}
         .msg.user{flex-direction:row-reverse;align-self:flex-end}
         .msg-avatar{
-            width:32px;height:32px;border-radius:9px;flex-shrink:0;
-            display:flex;align-items:center;justify-content:center;font-size:14px;
+            width:36px;height:36px;border-radius:10px;flex-shrink:0;
+            display:flex;align-items:center;justify-content:center;font-size:16px;
             border:1px solid var(--border);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
         }
-        .msg.user .msg-avatar{background:var(--text);border-color:var(--text)}
+        .msg.user .msg-avatar{background:linear-gradient(135deg, var(--text), #444);border-color:var(--text); color: #fff; font-weight: 700; font-size: 13px;}
         .msg.ai .msg-avatar{background:var(--surface);border-color:var(--border)}
         .msg-body{flex:1;min-width:0}
         .msg.user .msg-body{display:flex;justify-content:flex-end}
 
         .bubble{
-            border-radius:14px;padding:11px 15px;
-            font-size:13.5px;line-height:1.7;max-width:100%;
+            border-radius:16px;padding:14px 18px;
+            font-size:14px;line-height:1.65;max-width:100%;
+            font-weight: 500;
         }
         .msg.user .bubble{
             background:var(--text);color:#fff;
-            border-bottom-right-radius:4px;
+            border-top-right-radius:4px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
         .msg.ai .bubble{
             background:var(--surface);border:1px solid var(--border);
-            border-bottom-left-radius:4px;color:var(--text);
-            box-shadow:var(--shadow);
+            border-top-left-radius:4px;color:var(--text);
+            box-shadow: var(--shadow);
         }
-        .bubble p{margin-bottom:6px}
+        .bubble p{margin-bottom:10px}
         .bubble p:last-child{margin-bottom:0}
+        .bubble strong{font-weight: 700;}
 
         /* Sources */
-        .sources{display:flex;flex-wrap:wrap;gap:5px;margin-top:10px;padding-top:10px;border-top:1px solid var(--border)}
-        .src-label{font-size:10.5px;color:var(--muted);font-weight:600;letter-spacing:.5px;width:100%;margin-bottom:2px}
+        .sources{display:flex;flex-wrap:wrap;gap:6px;margin-top:14px;padding-top:14px;border-top:1px solid var(--border)}
+        .src-label{font-size:11px;color:var(--muted);font-weight:700;letter-spacing:.5px;width:100%;margin-bottom:4px; text-transform: uppercase;}
         .source-chip{
-            display:flex;align-items:center;gap:5px;
-            background:var(--accent-lt);border:1px solid #c7d7fd;
-            border-radius:6px;padding:3px 9px;font-size:11.5px;color:var(--accent);
-            font-weight:500;cursor:pointer;transition:background .15s;
+            display:flex;align-items:center;gap:6px;
+            background:var(--surface2);border:1px solid var(--border2);
+            border-radius:8px;padding:4px 10px;font-size:12px;color:var(--text2);
+            font-weight:600;cursor:pointer;transition:all .2s;
         }
-        .source-chip:hover{background:#dceafe}
-        .source-chip svg{width:10px;height:10px;stroke:var(--accent);fill:none;stroke-width:2;stroke-linecap:round}
+        .source-chip:hover{background:var(--accent-lt); border-color:#c7d7fd; color:var(--accent);}
+        .source-chip svg{width:12px;height:12px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round}
 
         /* Typing */
-        .typing-dots{display:flex;gap:4px;align-items:center;padding:14px 15px}
+        .typing-dots{display:flex;gap:5px;align-items:center;padding:16px 18px}
         .typing-dots span{
-            width:6px;height:6px;border-radius:50%;background:var(--border2);
-            animation:bounce 1.3s infinite;
+            width:8px;height:8px;border-radius:50%;background:var(--muted);
+            animation:bounce 1.4s infinite ease-in-out both;
         }
-        .typing-dots span:nth-child(2){animation-delay:.18s}
-        .typing-dots span:nth-child(3){animation-delay:.36s}
+        .typing-dots span:nth-child(1){animation-delay:-0.32s}
+        .typing-dots span:nth-child(2){animation-delay:-0.16s}
 
         /* Input */
         .input-area{
-            padding:14px 24px 18px;
-            border-top:1px solid var(--border);
-            background:var(--surface);
+            padding:20px 40px 24px;
+            background: linear-gradient(to top, var(--bg) 80%, transparent);
             flex-shrink:0;
+            position: relative;
         }
         .input-box{
-            display:flex;gap:8px;align-items:flex-end;
-            background:var(--surface2);
-            border:1.5px solid var(--border);
-            border-radius:13px;padding:10px 10px 10px 14px;
-            transition:border-color .2s,box-shadow .2s;
+            display:flex;gap:12px;align-items:flex-end;
+            background:var(--surface);
+            border:2px solid var(--border);
+            border-radius:16px;padding:12px 14px 12px 18px;
+            transition:all .2s;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.04);
         }
-        .input-box:focus-within{
+        .input-box.focused{
             border-color:var(--accent);
-            box-shadow:0 0 0 3px rgba(42,110,245,.08);
+            box-shadow:0 0 0 4px rgba(42,110,245,.1), 0 8px 24px rgba(0,0,0,0.06);
+            transform: translateY(-1px);
         }
         .input-box textarea{
             flex:1;background:none;border:none;outline:none;
             color:var(--text);font-family:'Plus Jakarta Sans',sans-serif;
-            font-size:13.5px;resize:none;max-height:120px;min-height:22px;line-height:1.55;
+            font-size:14.5px;font-weight:500;resize:none;max-height:150px;min-height:24px;line-height:1.6;
+            padding: 2px 0;
         }
         .input-box textarea::placeholder{color:var(--muted)}
         .send-btn{
-            width:36px;height:36px;border-radius:9px;flex-shrink:0;
-            background:var(--text);border:none;cursor:pointer;
+            width:40px;height:40px;border-radius:12px;flex-shrink:0;
+            background:var(--accent);border:none;cursor:pointer;
             display:flex;align-items:center;justify-content:center;
-            transition:opacity .15s,transform .12s;
+            transition:all .2s;
+            box-shadow: 0 4px 12px rgba(42,110,245,0.2);
         }
-        .send-btn:hover{opacity:.85}
-        .send-btn:active{transform:scale(.9)}
-        .send-btn:disabled{opacity:.3;cursor:not-allowed}
-        .send-btn svg{width:15px;height:15px;stroke:#fff;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+        .send-btn:hover{background:#1d5ce5; transform: translateY(-1px); box-shadow: 0 6px 16px rgba(42,110,245,0.3);}
+        .send-btn:active{transform:scale(.95)}
+        .send-btn:disabled{background:var(--border2); box-shadow: none; cursor:not-allowed; transform: none;}
+        .send-btn svg{width:18px;height:18px;stroke:#fff;fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
 
-        .input-footer{display:flex;justify-content:space-between;align-items:center;margin-top:7px;padding:0 2px}
-        .input-hint{font-size:11px;color:var(--muted)}
-        .char-count{font-size:11px;color:var(--muted)}
+        .input-footer{display:flex;justify-content:space-between;align-items:center;margin-top:10px;padding:0 4px}
+        .input-hint{font-size:11.5px;color:var(--muted); font-weight: 600;}
+        .char-count{font-size:11.5px;color:var(--muted); font-weight: 600;}
 
-        /* Divider */
-        .divider{display:flex;align-items:center;gap:10px;opacity:.4}
-        .divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border2)}
-        .divider span{font-size:10px;color:var(--muted);font-weight:600;letter-spacing:1px;text-transform:uppercase}
+        /* Source Modal */
+        .modal-overlay{
+            display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);
+            z-index:1000;align-items:center;justify-content:center;
+            animation:fadeInOverlay .2s ease;
+            backdrop-filter: blur(4px);
+        }
+        .modal-overlay.show{display:flex}
+        .modal-content{
+            background:var(--surface);border-radius:16px;
+            max-width:600px;width:90%;max-height:80vh;
+            overflow-y:auto;padding:32px;box-shadow:var(--shadow-md);
+            animation:slideUp .3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid var(--border);
+        }
+        .modal-header{
+            display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;
+            border-bottom:1px solid var(--border);padding-bottom:16px;
+        }
+        .modal-title{font-family:'Fraunces',serif;font-size:18px;font-weight:600;color:var(--text); display: flex; align-items: center; gap: 8px;}
+        .modal-close{
+            background:var(--surface2);border:1px solid var(--border);font-size:16px;cursor:pointer;
+            color:var(--muted);transition:all .2s; width: 32px; height: 32px; border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .modal-close:hover{color:var(--text); background: var(--border); transform: scale(1.05);}
+        .modal-body{
+            font-size:14.5px;line-height:1.7;color:var(--text2);
+            word-wrap:break-word;white-space:pre-wrap;
+            font-family: 'Geist Mono', monospace;
+            background: var(--surface2); padding: 20px; border-radius: 12px; border: 1px solid var(--border);
+        }
+
+        /* Toast Notifications */
+        .toast-container {
+            position: fixed; bottom: 24px; right: 24px;
+            display: flex; flex-direction: column; gap: 10px; z-index: 1000;
+        }
+        .toast {
+            background: var(--surface); border: 1px solid var(--border);
+            padding: 14px 20px; border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            font-size: 13.5px; font-weight: 600; color: var(--text);
+            display: flex; align-items: center; gap: 10px;
+            animation: slideInRight 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards, fadeOut 0.4s ease 3s forwards;
+            border-left: 4px solid var(--accent);
+        }
+        .toast.success { border-left-color: var(--success); }
+        .toast.error { border-left-color: var(--danger); }
+        .toast.warn { border-left-color: var(--warn); }
+        .toast-icon { font-size: 16px; }
 
         /* Keyframes */
-        @keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
-        @keyframes bounce{0%,80%,100%{transform:translateY(0)}40%{transform:translateY(-5px)}}
-        @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+        @keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+        @keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
+        @keyframes bounce{0%,80%,100%{transform:scale(0)}40%{transform:scale(1)}}
+        @keyframes pulse{0%{box-shadow: 0 0 0 0 rgba(14, 166, 115, 0.4);}70%{box-shadow: 0 0 0 6px rgba(14, 166, 115, 0);}100%{box-shadow: 0 0 0 0 rgba(14, 166, 115, 0);}}
+        @keyframes slideInRight { from { transform: translateX(120%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        @keyframes fadeOut { to { opacity: 0; transform: translateY(10px); visibility: hidden; } }
+        @keyframes fadeInOverlay{from{opacity:0}to{opacity:1}}
+        @keyframes slideUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+        @keyframes spin { 100% { transform: rotate(360deg); } }
 
-        @media(max-width:700px){.sidebar{display:none}}
+        .spin-icon { animation: spin 1s linear infinite; }
+
+        @media(max-width:768px){.sidebar{display:none}}
     </style>
 </head>
 <body>
@@ -385,7 +506,7 @@
                     <div class="upload-up">
                         <svg viewBox="0 0 24 24"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0018 9h-1.26A8 8 0 103 16.3"/></svg>
                     </div>
-                    <p><strong>Click to upload</strong> or drag & drop<br/>your documents here</p>
+                    <p><strong>Click to browse</strong> or drag & drop<br/>your documents here</p>
                     <div class="upload-types">
                         <span class="type-tag">PDF</span>
                         <span class="type-tag">DOCX</span>
@@ -395,12 +516,12 @@
 
                 <div class="upload-actions">
                     <button class="btn-process" id="processBtn" onclick="processAllFiles()">
-                        <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-                        Index Files
+                        <svg id="processIcon" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                        <span id="processText">Index Files</span>
                     </button>
                 </div>
 
-                <div class="prog-wrap" id="progWrap" style="margin-top:10px">
+                <div class="prog-wrap" id="progWrap">
                     <div class="prog-row">
                         <span id="progFile">Indexing…</span>
                         <span class="prog-pct" id="progPct">0%</span>
@@ -412,10 +533,15 @@
             <!-- Doc list -->
             <div>
                 <div class="slabel">Indexed Files</div>
-                <div class="doc-list" id="docList"></div>
+                <div class="doc-list" id="docList">
+                    <!-- Docs will render here -->
+                </div>
+                <button class="btn-clear-docs" id="clearDocsBtn" onclick="clearAllIndexedDocs()">
+                    ✕ Clear Indexed Files
+                </button>
             </div>
 
-            <div class="divider"><span>Retrieval</span></div>
+            <div class="divider"><span>Retrieval Settings</span></div>
 
             <!-- Settings -->
             <div>
@@ -424,7 +550,7 @@
                     <div class="srow">
                         <div><div class="srow-label">Top-K Chunks</div><div class="srow-sub">Retrieved per query</div></div>
                         <div class="slider-wrap">
-                            <input type="range" min="1" max="10" value="5" oninput="document.getElementById('kv').textContent=this.value"/>
+                            <input type="range" min="1" max="10" value="5" oninput="topKChunks=this.value; document.getElementById('kv').textContent=this.value"/>
                             <span class="slider-val" id="kv">5</span>
                         </div>
                     </div>
@@ -451,12 +577,12 @@
 
             <!-- Model -->
             <div style="margin-top:auto">
-                <div class="slabel">Active Model</div>
+                <div class="slabel">Active Engine</div>
                 <div class="model-card">
-                    <div class="model-pulse"></div>
+                    <div class="model-pulse" id="modelPulse"></div>
                     <div class="model-info">
-                        <div class="mname">Ollama · LLaMA 3</div>
-                        <div class="mdesc">Local · FAISS + Sentence-BERT</div>
+                        <div class="mname">Ollama · LLaMA 3.2</div>
+                        <div class="mdesc">FAISS Local Vector Search</div>
                     </div>
                 </div>
             </div>
@@ -470,17 +596,16 @@
         <!-- Topbar -->
         <header class="topbar">
             <div class="topbar-left">
-                <div class="topbar-title">Document QA Chat</div>
-                <div class="topbar-meta" id="sessionMeta">No documents loaded · RAG pipeline ready</div>
+                <div class="topbar-title">Workspace Chat</div>
+                <div class="topbar-meta">
+                    <div class="status-dot" id="statusDot"></div>
+                    <span id="sessionMeta">Awaiting documents...</span>
+                </div>
             </div>
             <div class="topbar-right">
-                <button class="tbtn" onclick="clearChat()">
+                <button class="tbtn" onclick="clearChat()" title="Clear Chat History">
                     <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/></svg>
-                    Clear
-                </button>
-                <button class="tbtn">
-                    <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                    Export
+                    Clear Chat
                 </button>
             </div>
         </header>
@@ -492,27 +617,26 @@
                     <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
                 </div>
                 <div class="empty-title">Ask your documents anything</div>
-                <div class="empty-sub">Upload a document on the left, then type a question. The RAG pipeline retrieves the most relevant chunks and generates a grounded answer.</div>
+                <div class="empty-sub">Upload local documents on the left. The RAG pipeline will retrieve relevant context and stream grounded answers from LLaMA 3.2.</div>
                 <div class="suggestions">
-                    <div class="suggestion" onclick="useSuggestion(this)">Summarize the project</div>
+                    <div class="suggestion" onclick="useSuggestion(this)">Summarize the key points</div>
                     <div class="suggestion" onclick="useSuggestion(this)">What is the system architecture?</div>
-                    <div class="suggestion" onclick="useSuggestion(this)">Non-functional requirements</div>
-                    <div class="suggestion" onclick="useSuggestion(this)">What modules are completed?</div>
+                    <div class="suggestion" onclick="useSuggestion(this)">Extract the main requirements</div>
                 </div>
             </div>
         </div>
 
         <!-- Input -->
         <div class="input-area">
-            <div class="input-box">
-        <textarea id="queryInput" rows="1" placeholder="Ask a question about your documents…"
-                  onkeydown="handleKey(event)" oninput="autoResize(this);updateCC(this)"></textarea>
+            <div class="input-box" id="inputBox">
+                <textarea id="queryInput" rows="1" placeholder="Type a message to query your documents..."
+                          onkeydown="handleKey(event)" onfocus="focusInput(true)" onblur="focusInput(false)" oninput="autoResize(this);updateCC(this)"></textarea>
                 <button class="send-btn" id="sendBtn" onclick="sendMessage()">
                     <svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
                 </button>
             </div>
             <div class="input-footer">
-                <span class="input-hint">↵ to send · Shift+↵ new line</span>
+                <span class="input-hint">↵ Enter to send · Shift+↵ for new line</span>
                 <span class="char-count" id="charCount">0 / 2000</span>
             </div>
         </div>
@@ -520,12 +644,52 @@
     </main>
 </div>
 
+<!-- Source Modal -->
+<div class="modal-overlay" id="sourceModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <div class="modal-title"><svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" fill="none" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg> Source Context</div>
+            <button class="modal-close" onclick="closeSourceModal()">✕</button>
+        </div>
+        <div class="modal-body" id="sourceModalBody"></div>
+    </div>
+</div>
+
+<!-- Toast Container -->
+<div class="toast-container" id="toastContainer"></div>
+
 <script>
     let docs=[], isWaiting=false;
+    let showSourceTraces = true;
+    let topKChunks = 5;
+    let chunkSize = 256;
 
     const API_BASE_URL = 'http://localhost:8000';
 
-    // Upload
+    // --- UI Interactions ---
+    function focusInput(focused) {
+        const box = document.getElementById('inputBox');
+        if(focused) box.classList.add('focused');
+        else box.classList.remove('focused');
+    }
+
+    function showToast(msg, type='info') {
+        const container = document.getElementById('toastContainer');
+        const toast = document.createElement('div');
+        toast.className = `toast ${type}`;
+
+        let icon = 'ℹ️';
+        if(type === 'success') icon = '✅';
+        if(type === 'error') icon = '🔴';
+        if(type === 'warn') icon = '⚠️';
+
+        toast.innerHTML = `<span class="toast-icon">${icon}</span> <span>${msg}</span>`;
+        container.appendChild(toast);
+
+        setTimeout(() => toast.remove(), 3500);
+    }
+
+    // --- Upload Logic ---
     function onDrag(e){e.preventDefault();document.getElementById('uploadZone').classList.add('drag')}
     function offDrag(e){document.getElementById('uploadZone').classList.remove('drag')}
     function onDrop(e){e.preventDefault();offDrag(e);handleFiles(e.dataTransfer.files)}
@@ -533,13 +697,21 @@
     function handleFiles(files){
         if(!files.length)return;
 
-        // Instead of immediately sending to backend, just add to our list as pending
+        const allowedExtensions = ['pdf', 'docx', 'txt'];
+        const invalidFiles = [];
+        let newCount = 0;
+
         Array.from(files).forEach((file)=>{
             const ext=file.name.split('.').pop().toLowerCase();
+
+            if(!allowedExtensions.includes(ext)){
+                invalidFiles.push(file.name);
+                return;
+            }
+
             const icon=ext==='pdf'?'📕':ext==='docx'?'📘':'📄';
             const size=(file.size/1024).toFixed(1)+' KB';
 
-            // Add as pending doc
             docs.push({
                 id: Date.now() + Math.random(),
                 name: file.name,
@@ -548,28 +720,38 @@
                 fileObj: file,
                 status: 'pending'
             });
+            newCount++;
         });
+
+        if(invalidFiles.length > 0){
+            showToast(`Skipped ${invalidFiles.length} invalid file(s). Only PDF/DOCX/TXT allowed.`, 'warn');
+        }
 
         renderDocs();
         updateMeta();
 
-        // Show the process button
-        document.getElementById('processBtn').classList.add('show');
+        if(newCount > 0) {
+            document.getElementById('processBtn').classList.add('show');
+            showToast(`Added ${newCount} file(s) to queue.`, 'info');
+        }
     }
 
     async function processAllFiles() {
         const pendingDocs = docs.filter(d => d.status === 'pending');
         if (pendingDocs.length === 0) return;
 
-        // Hide button during processing
-        document.getElementById('processBtn').classList.remove('show');
+        const btn = document.getElementById('processBtn');
+        const btnText = document.getElementById('processText');
+        const btnIcon = document.getElementById('processIcon');
 
-        // Disable chat
+        // Update Button UI to Loading State
+        btn.classList.remove('show');
         isWaiting = true;
         document.getElementById('sendBtn').disabled = true;
         document.getElementById('queryInput').disabled = true;
+        document.getElementById('modelPulse').style.animation = 'pulse 0.5s infinite';
 
-        // If this is a completely fresh run (or we cleared all indexed docs), reset first
+        // Reset if starting fresh
         const indexedDocs = docs.filter(d => d.status === 'indexed');
         if (indexedDocs.length === 0) {
             try {
@@ -585,12 +767,14 @@
         const pp=document.getElementById('progPct');
         pw.classList.add('show');
 
+        let successCount = 0;
+
         // Process sequentially
         for (let i = 0; i < pendingDocs.length; i++) {
             const doc = pendingDocs[i];
-            pl.textContent = `Indexing ${i+1} of ${pendingDocs.length}: ${doc.name}`;
-            pf.style.width = '50%';
-            pp.textContent = 'Processing...';
+            pl.textContent = `Indexing ${i+1}/${pendingDocs.length}: ${doc.name}`;
+            pf.style.width = '30%';
+            pp.textContent = 'Uploading...';
 
             const formData = new FormData();
             formData.append('file', doc.fileObj);
@@ -603,44 +787,65 @@
 
                 if (response.ok) {
                     doc.status = 'indexed';
-                    renderDocs(); // update the dot color
+                    successCount++;
+                    pf.style.width = '100%';
+                    pp.textContent = 'Done';
+                    renderDocs();
                 } else {
-                    console.error('Upload failed for', doc.name);
                     doc.status = 'error';
                     renderDocs();
+                    showToast(`Failed to index ${doc.name}`, 'error');
                 }
             } catch (error) {
-                console.error('Error uploading file:', error);
                 doc.status = 'error';
                 renderDocs();
+                showToast(`Server error on ${doc.name}`, 'error');
             }
+
+            await new Promise(r => setTimeout(r, 400));
         }
 
         pf.style.width = '100%';
-        pp.textContent = 'Complete';
+        pl.textContent = 'All files processed!';
+        pp.textContent = '';
 
         setTimeout(() => {
             pw.classList.remove('show');
             isWaiting = false;
             document.getElementById('sendBtn').disabled = false;
             document.getElementById('queryInput').disabled = false;
+            document.getElementById('modelPulse').style.animation = 'pulse 2s infinite';
             updateMeta();
-        }, 1000);
+
+            if(successCount > 0) {
+                showToast(`Successfully indexed ${successCount} document(s)`, 'success');
+            }
+        }, 1200);
     }
 
     function renderDocs(){
-        document.getElementById('docList').innerHTML=docs.map(d=>`
+        const list = document.getElementById('docList');
+        if(docs.length === 0) {
+            list.innerHTML = '<div style="font-size:12px; color:var(--muted); text-align:center; padding: 10px;">No files added</div>';
+            updateClearBtn();
+            return;
+        }
+
+        list.innerHTML=docs.map(d=>`
     <div class="doc-item" id="doc-${d.id}">
       <div class="doc-file-icon">${d.icon}</div>
       <div class="doc-info">
         <div class="doc-name" title="${d.name}">${d.name}</div>
         <div class="doc-meta">
-            <div class="doc-dot ${d.status === 'pending' ? 'pending' : ''}" ${d.status === 'error' ? 'style="background:var(--danger)"' : ''}></div>
-            ${d.size} · ${d.status === 'pending' ? 'Pending' : d.status === 'error' ? 'Error' : 'Indexed'}
+            <div class="doc-dot ${d.status === 'pending' ? 'pending' : ''} ${d.status === 'error' ? 'error' : ''}"></div>
+            ${d.size} · ${d.status.charAt(0).toUpperCase() + d.status.slice(1)}
         </div>
       </div>
-      <div class="doc-del" onclick="removeDoc(${d.id})" title="Remove">✕</div>
+      <div class="doc-del" onclick="removeDoc(${d.id})" title="Remove Document">
+        <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+      </div>
     </div>`).join('');
+        updateClearBtn();
     }
 
     async function removeDoc(id){
@@ -648,42 +853,89 @@
         renderDocs();
         updateMeta();
 
-        // If no pending docs left, hide the index button
         if (docs.filter(d => d.status === 'pending').length === 0) {
             document.getElementById('processBtn').classList.remove('show');
         }
 
-        // If all docs removed, reset the backend index completely
         if (docs.length === 0) {
             try {
                 await fetch(`${API_BASE_URL}/api/reset`, { method: 'POST' });
+                showToast("All documents removed. Memory cleared.", "info");
             } catch (e) {
                  console.error('Failed to reset index:', e);
             }
         }
     }
 
-    function updateMeta(){
-        const indexed = docs.filter(d => d.status === 'indexed').length;
-        document.getElementById('sessionMeta').textContent=indexed > 0
-            ?`${indexed} document${indexed>1?'s':''} loaded · RAG pipeline active`
-            :'No documents loaded · RAG pipeline ready';
+    async function clearAllIndexedDocs(){
+        const indexedCount = docs.filter(d => d.status === 'indexed').length;
+        if(indexedCount === 0) return;
+
+        if(!confirm(`Are you sure you want to clear ${indexedCount} indexed document(s)? This will remove them from the AI's memory.`)) return;
+
+        try {
+            const response = await fetch(`${API_BASE_URL}/api/reset`, { method: 'POST' });
+            if(response.ok){
+                docs = docs.filter(d => d.status !== 'indexed');
+                renderDocs();
+                updateMeta();
+                showToast('RAG memory successfully cleared.', 'success');
+                clearChat();
+            }
+        } catch (e) {
+            showToast('Error clearing indexed files.', 'error');
+        }
     }
 
-    // Chat
+    function updateClearBtn(){
+        const indexedCount = docs.filter(d => d.status === 'indexed').length;
+        const btn = document.getElementById('clearDocsBtn');
+        if(indexedCount > 0){
+            btn.style.display = 'block';
+        } else {
+            btn.style.display = 'none';
+        }
+    }
+
+    function updateMeta(){
+        const indexed = docs.filter(d => d.status === 'indexed').length;
+        const metaText = document.getElementById('sessionMeta');
+        const dot = document.getElementById('statusDot');
+
+        if (indexed > 0) {
+            metaText.textContent = `${indexed} document${indexed>1?'s':''} indexed · RAG Active`;
+            dot.classList.add('active');
+        } else {
+            metaText.textContent = 'Awaiting documents...';
+            dot.classList.remove('active');
+        }
+    }
+
+    // --- Chat Logic ---
     async function sendMessage(){
         const ta=document.getElementById('queryInput');
         const q=ta.value.trim();
         if(!q||isWaiting)return;
-        ta.value='';autoResize(ta);updateCC(ta);
-        hideEmpty();addUserMsg(q);showTyping();isWaiting=true;
+
+        const isIndexEmpty = docs.filter(d => d.status === 'indexed').length === 0;
+        if (isIndexEmpty) {
+            showToast("Please upload and index a document first", "warn");
+            return;
+        }
+
+        ta.value='';
+        autoResize(ta);
+        updateCC(ta);
+        hideEmpty();
+
+        addUserMsg(q);
+        showTyping();
+        isWaiting=true;
 
         try {
             const response = await fetch(`${API_BASE_URL}/api/chat`, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ query: q })
             });
 
@@ -694,11 +946,13 @@
                 addAiMsg(data.text, data.sources || []);
             } else {
                 addAiMsg("Sorry, I encountered an error connecting to the backend.", []);
+                showToast("Backend returned an error", "error");
             }
         } catch (error) {
             console.error('Error sending message:', error);
             removeTyping();
-            addAiMsg("Sorry, I couldn't connect to the backend server. Make sure it's running on port 8000.", []);
+            addAiMsg("Connection error. Make sure your local FastAPI backend is running.", []);
+            showToast("Server connection failed", "error");
         } finally {
             isWaiting=false;
         }
@@ -707,46 +961,138 @@
     function addUserMsg(text){
         const el=document.createElement('div');
         el.className='msg user';
-        el.innerHTML=`<div class="msg-avatar" style="font-size:13px;color:#fff">U</div><div class="msg-body"><div class="bubble">${esc(text)}</div></div>`;
-        document.getElementById('messages').appendChild(el);scrollBot();
+        el.innerHTML=`<div class="msg-avatar">U</div><div class="msg-body"><div class="bubble">${esc(text)}</div></div>`;
+        document.getElementById('messages').appendChild(el);
+        scrollBot();
     }
 
-    function addAiMsg(html,sources){
-        const chips=sources.map(s=>`<div class="source-chip"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>${esc(s.substring(0, 30))}...</div>`).join('');
-        const srcBlock=sources.length?`<div class="sources"><div class="src-label">Sources</div>${chips}</div>`:'';
-        const el=document.createElement('div');
-        el.className='msg ai';
-        el.innerHTML=`
-    <div class="msg-avatar">🤖</div>
-    <div class="msg-body"><div class="bubble"><p>${html.replace(/\n/g,'</p><p>')}</p>${srcBlock}</div></div>`;
-        document.getElementById('messages').appendChild(el);scrollBot();
+    function addAiMsg(text, sources){
+        if(!showSourceTraces || !sources.length){
+            const el=document.createElement('div');
+            el.className='msg ai';
+            el.innerHTML=`<div class="msg-avatar">🤖</div><div class="msg-body"><div class="bubble"><p class="typewriter"></p></div></div>`;
+            document.getElementById('messages').appendChild(el);
+            simulateTyping(el.querySelector('.typewriter'), text, null);
+            return;
+        }
+
+        const chips = sources.map(s => {
+            const escapedText = s.replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/"/g, '&quot;');
+            return `<div class="source-chip" data-source="${escapedText}" onclick="openSourceModal(this)" title="Click to view full chunk">
+                <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                ${esc(s.substring(0, 35))}...
+            </div>`;
+        }).join('');
+
+        const srcBlock = sources.length ? `<div class="sources" style="opacity:0; transition:opacity 0.5s"><div class="src-label">Context Sources Retrieved</div>${chips}</div>` : '';
+
+        const el = document.createElement('div');
+        el.className = 'msg ai';
+        el.innerHTML = `
+            <div class="msg-avatar">🤖</div>
+            <div class="msg-body">
+                <div class="bubble">
+                    <p class="typewriter"></p>
+                    ${srcBlock}
+                </div>
+            </div>`;
+        document.getElementById('messages').appendChild(el);
+
+        simulateTyping(el.querySelector('.typewriter'), text, el.querySelector('.sources'));
     }
+
+    // Dynamic Typing Effect
+    function simulateTyping(element, text, sourceElement) {
+        const words = text.split(' ');
+        let i = 0;
+
+        function typeNextWord() {
+            if(i < words.length) {
+                let word = words[i].replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br/>');
+                element.innerHTML += (i > 0 ? ' ' : '') + word;
+                i++;
+                scrollBot();
+                setTimeout(typeNextWord, 15 + Math.random() * 25); // Random typing speed
+            } else {
+                if(sourceElement) sourceElement.style.opacity = '1';
+                scrollBot();
+            }
+        }
+        typeNextWord();
+    }
+
+    function openSourceModal(element){
+        const sourceText = element.getAttribute('data-source');
+        document.getElementById('sourceModalBody').textContent = sourceText;
+        document.getElementById('sourceModal').classList.add('show');
+    }
+
+    function closeSourceModal(){
+        document.getElementById('sourceModal').classList.remove('show');
+    }
+
+    document.addEventListener('click', (e) => {
+        const modal = document.getElementById('sourceModal');
+        if(e.target === modal) closeSourceModal();
+    });
 
     function showTyping(){
         const el=document.createElement('div');el.className='msg ai';el.id='typing';
-        el.innerHTML=`<div class="msg-avatar">🤖</div><div class="msg-body"><div class="bubble"><div class="typing-dots"><span></span><span></span><span></span></div></div></div>`;
-        document.getElementById('messages').appendChild(el);scrollBot();
+        el.innerHTML=`<div class="msg-avatar">🤖</div><div class="msg-body"><div class="bubble" style="padding: 0;"><div class="typing-dots"><span></span><span></span><span></span></div></div></div>`;
+        document.getElementById('messages').appendChild(el);
+        scrollBot();
     }
     function removeTyping(){document.getElementById('typing')?.remove()}
 
     function clearChat(){
-        document.getElementById('messages').innerHTML='';showEmpty();
+        const msgs = document.getElementById('messages');
+        if(msgs.querySelector('.msg')) {
+            msgs.innerHTML='';
+            showEmpty();
+            showToast("Chat history cleared", "info");
+        }
     }
     function hideEmpty(){document.getElementById('emptyState')?.remove()}
     function showEmpty(){
         const es=document.createElement('div');es.className='empty-state';es.id='emptyState';
-        es.innerHTML=`<div class="empty-orb"><svg viewBox="0 0 24 24" width="30" height="30" stroke="var(--accent)" fill="none" stroke-width="1.6" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div><div class="empty-title">Ask your documents anything</div><div class="empty-sub">Upload a document on the left, then type a question.</div>`;
+        es.innerHTML=`<div class="empty-orb"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div><div class="empty-title">Ask your documents anything</div><div class="empty-sub">Upload local documents on the left. The RAG pipeline will retrieve relevant context and stream grounded answers from LLaMA 3.2.</div>`;
         document.getElementById('messages').appendChild(es);
     }
-    function useSuggestion(el){document.getElementById('queryInput').value=el.textContent;sendMessage()}
+    function useSuggestion(el){
+        const isIndexEmpty = docs.filter(d => d.status === 'indexed').length === 0;
+        if (isIndexEmpty) {
+            showToast("Please upload and index a document first", "warn");
+            return;
+        }
+        document.getElementById('queryInput').value=el.textContent;
+        sendMessage();
+    }
 
     // Helpers
-    function scrollBot(){const m=document.getElementById('messages');m.scrollTop=m.scrollHeight}
+    function scrollBot(){const m=document.getElementById('messages'); m.scrollTo({top: m.scrollHeight, behavior: 'smooth'});}
     function handleKey(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMessage()}}
-    function autoResize(ta){ta.style.height='auto';ta.style.height=Math.min(ta.scrollHeight,120)+'px'}
+    function autoResize(ta){ta.style.height='auto';ta.style.height=Math.min(ta.scrollHeight,150)+'px'}
     function updateCC(ta){document.getElementById('charCount').textContent=ta.value.length+' / 2000'}
     function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
-    function setPill(btn,e){e.stopPropagation();btn.closest('.pill-toggle').querySelectorAll('button').forEach(b=>b.classList.remove('active'));btn.classList.add('active')}
+    function setPill(btn,e){
+        e.stopPropagation();
+        const toggle = btn.closest('.pill-toggle');
+        toggle.querySelectorAll('button').forEach(b=>b.classList.remove('active'));
+        btn.classList.add('active');
+
+        const srowLabel = toggle.closest('.srow')?.querySelector('.srow-label');
+        if(srowLabel && srowLabel.textContent.includes('Chunk Size')){
+            const value = btn.textContent.trim();
+            chunkSize = value === '1k' ? 1024 : parseInt(value);
+        }
+
+        if(srowLabel && srowLabel.textContent.includes('Source Trace')){
+            showSourceTraces = btn.textContent.trim() === 'On';
+        }
+    }
+
+    // Init
+    renderDocs();
 </script>
 </body>
 </html>

@@ -102,7 +102,12 @@ def extract_text_from_pdf(pdf_bytes):
         text += page.get_text()
     return text
 
-def chunk_text(text):
+def chunk_text(text, chunk_size=256):
+    """
+    Chunk text into sentences/periods.
+    chunk_size parameter is informational (used by frontend for chunking strategy).
+    For now, we chunk by sentence boundaries.
+    """
     return [c for c in text.split(". ") if c.strip()]
 
 @app.post("/api/upload")
@@ -153,6 +158,8 @@ async def reset_index():
 class ChatRequest(BaseModel):
     query: str
     session_id: str = None
+    top_k: int = 3
+    chunk_size: int = 256
 
 @app.post("/api/chat")
 async def chat(request: ChatRequest):
@@ -168,7 +175,7 @@ async def chat(request: ChatRequest):
              raise Exception("Embedding model is not initialized.")
 
         query_embedding = model.encode([request.query]).astype(np.float32)
-        k = min(3, len(chunks))
+        k = min(request.top_k, len(chunks))
         distances, indices = index.search(query_embedding, k=k)
 
         relevant_chunks = [chunks[i] for i in indices[0] if i < len(chunks)]
