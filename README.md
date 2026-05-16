@@ -179,12 +179,6 @@ Table: `userchat_history`
 
 ---
 
-## 👨‍💻 Author
-
-Dhruv Sharma
-
----
-
 ## 📌 License
 
 This project is for educational purposes.
